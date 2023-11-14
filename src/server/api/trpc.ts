@@ -14,7 +14,8 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { getServerAuthSession } from "@/server/auth";
-import { db } from "@/server/db";
+import dbConn from "@/server/db";
+import mongoose from "mongoose";
 
 /**
  * 1. CONTEXT
@@ -38,10 +39,11 @@ interface CreateContextOptions {
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = (opts: CreateContextOptions) => {
+const createInnerTRPCContext = async (opts: CreateContextOptions) => {
+  const databaseConn = (await dbConn()) as unknown as mongoose.Mongoose;
   return {
     session: opts.session,
-    db,
+    db: databaseConn,
   };
 };
 
